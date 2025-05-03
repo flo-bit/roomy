@@ -21,7 +21,7 @@
     "format": "prettier . --write",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "prepare": "node .husky/install.mjs",
+    "prepare": "",
     "lint-staged": "lint-staged"
   },
   "engines": {
