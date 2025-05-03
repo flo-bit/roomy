@@ -1,5 +1,0 @@
-# Runs before every commit, modify tasks in package.json
-pnpm lint-staged
-
-# Test using "exit 1" to cancel commit before actually making it
-# exit 1

@@ -1,15 +1,12 @@
 <script lang="ts">
-  import { Button, Checkbox, Popover, Toolbar } from "bits-ui";
-  import { AvatarBeam } from "svelte-boring-avatars";
-  import { format, isToday } from "date-fns";
+  import { Button, Checkbox, Toolbar } from "bits-ui";
+  import { format } from "date-fns";
   import { getContext } from "svelte";
   import { getProfile } from "$lib/profile.svelte";
   import Icon from "@iconify/svelte";
   import { user } from "$lib/user.svelte";
-  import "emoji-picker-element";
   import { outerWidth } from "svelte/reactivity/window";
   import Drawer from "./Drawer.svelte";
-  import AvatarImage from "./AvatarImage.svelte";
   import { getContentHtml, type Item } from "$lib/tiptap/editor";
   import { Announcement, Message, type EntityIdStr } from "@roomy-chat/sdk";
   import { g } from "$lib/global.svelte";
@@ -17,12 +14,8 @@
   import type { JSONContent } from "@tiptap/core";
   import ChatInput from "./ChatInput.svelte";
   import toast from "svelte-french-toast";
-  import {
-    Prose,
-    Avatar,
-    Button as FoxButton,
-    Popover as FoxPopover,
-  } from "@fuxui/base";
+  import { Prose, Avatar, Button as FoxButton } from "@fuxui/base";
+  import { PopoverEmojiPicker } from "@fuxui/social";
   import RelativeTime from "svelte-relative-time";
 
   type Props = {
@@ -57,13 +50,6 @@
   let isThreading: { value: boolean } = getContext("isThreading");
   let users: { value: Item[] } = getContext("users");
   let contextItems: { value: Item[] } = getContext("contextItems");
-
-  let emojiDrawerPicker: (HTMLElement & any) | undefined = $state();
-  let emojiToolbarPicker: (HTMLElement & any) | undefined = $state();
-  let emojiRowPicker: (HTMLElement & any) | undefined = $state();
-  let isEmojiDrawerPickerOpen = $state(false);
-  let isEmojiToolbarPickerOpen = $state(false);
-  let isEmojiRowPickerOpen = $state(false);
 
   // Editing state
   let isEditing = $state(false);
@@ -105,8 +91,6 @@
 
   function startEditing() {
     if (message instanceof Message) {
-      isEmojiToolbarPickerOpen = false;
-
       try {
         // Parse the message body JSON to get a plain object
         const parsedContent = JSON.parse(message.bodyJson) as JSONContent;
@@ -172,12 +156,10 @@
     return "";
   }
 
-  function onEmojiPick(event: Event & { detail: { unicode: string } }) {
+  function pickedEmoji(emoji: string) {
     if (!user.agent) return;
-    message.reactions.toggle(event.detail.unicode, user.agent.assertDid);
+    message.reactions.toggle(emoji, user.agent.assertDid);
     message.commit();
-    isEmojiToolbarPickerOpen = false;
-    isEmojiRowPickerOpen = false;
   }
 
   function updateSelect() {
@@ -208,24 +190,6 @@
     }
   });
 
-  $effect(() => {
-    if (emojiToolbarPicker) {
-      emojiToolbarPicker.addEventListener("emoji-click", onEmojiPick);
-    }
-    if (emojiDrawerPicker) {
-      emojiDrawerPicker.addEventListener(
-        "emoji-click",
-        (e: Event & { detail: { unicode: string } }) => {
-          onEmojiPick(e);
-          isEmojiDrawerPickerOpen = false;
-          isDrawerOpen = false;
-        },
-      );
-    }
-    if (emojiRowPicker) {
-      emojiRowPicker.addEventListener("emoji-click", onEmojiPick);
-    }
-  });
 
   let shiftDown = $state(false);
   function onKeydown({ shiftKey }: KeyboardEvent) {
@@ -344,14 +308,18 @@
         {#each Object.keys(message.reactions.all()) as reaction}
           {@render reactionToggle(reaction)}
         {/each}
-        <FoxPopover>
+
+        <PopoverEmojiPicker
+          onpicked={(emoji) => {
+            pickedEmoji(emoji.unicode);
+          }}
+        >
           {#snippet child({ props })}
             <FoxButton variant="ghost" size="icon" {...props}>
               <Icon icon="lucide:smile-plus" class="text-primary" />
             </FoxButton>
           {/snippet}
-          <emoji-picker bind:this={emojiRowPicker}></emoji-picker>
-        </FoxPopover>
+        </PopoverEmojiPicker>
       </div>
     {/if}
   </div>
@@ -595,14 +563,17 @@
             😂
           </FoxButton>
 
-          <FoxPopover>
+          <PopoverEmojiPicker
+            onpicked={(emoji) => {
+              pickedEmoji(emoji.unicode);
+            }}
+          >
             {#snippet child({ props })}
               <FoxButton variant="ghost" size="icon" {...props}>
                 <Icon icon="lucide:smile-plus" class="text-primary" />
               </FoxButton>
             {/snippet}
-            <emoji-picker bind:this={emojiRowPicker}></emoji-picker>
-          </FoxPopover>
+          </PopoverEmojiPicker>
         </div>
 
         {#if authorProfile}
@@ -645,7 +616,7 @@
       </Drawer>
     {:else if !isEditing}
       <Toolbar.Root
-        class={`${!isEmojiToolbarPickerOpen && "hidden"} group-hover:flex absolute gap-1 -top-2 right-0 bg-base-200 dark:bg-base-800 p-1.5 px-2 rounded-2xl items-center`}
+        class={`hidden group-hover:flex absolute gap-1 -top-2 right-0 bg-base-200 dark:bg-base-800 p-1.5 px-2 rounded-2xl items-center`}
       >
         <FoxButton
           variant="ghost"
@@ -658,14 +629,18 @@
           size="icon"
           onclick={() => toggleReaction("😂")}>😂</FoxButton
         >
-        <FoxPopover>
+
+        <PopoverEmojiPicker
+          onpicked={(emoji) => {
+            pickedEmoji(emoji.unicode);
+          }}
+        >
           {#snippet child({ props })}
             <FoxButton variant="ghost" size="icon" {...props}>
               <Icon icon="lucide:smile-plus" class="text-primary" />
             </FoxButton>
           {/snippet}
-          <emoji-picker bind:this={emojiRowPicker}></emoji-picker>
-        </FoxPopover>
+        </PopoverEmojiPicker>
         {#if mayEdit}
           <FoxButton variant="ghost" size="icon" onclick={() => startEditing()}>
             <Icon icon="tabler:edit" />
