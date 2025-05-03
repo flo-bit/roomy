@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Avatar, Button, Checkbox, Popover, Toolbar } from "bits-ui";
+  import { Button, Checkbox, Popover, Toolbar } from "bits-ui";
   import { AvatarBeam } from "svelte-boring-avatars";
   import { format, isToday } from "date-fns";
   import { getContext } from "svelte";
@@ -17,6 +17,12 @@
   import type { JSONContent } from "@tiptap/core";
   import ChatInput from "./ChatInput.svelte";
   import toast from "svelte-french-toast";
+  import {
+    Prose,
+    Avatar,
+    Button as FoxButton,
+    buttonVariants,
+  } from "@fuxui/base";
 
   type Props = {
     message: Message | Announcement;
@@ -321,9 +327,12 @@
 
 <svelte:window onkeydown={onKeydown} onkeyup={onKeyup} />
 
-<div id={message.id} class={`flex flex-col ${isMobile && "max-w-screen"}`}>
+<div
+  id={message.id}
+  class={`flex flex-col ${isMobile && "max-w-screen"} py-1.5`}
+>
   <div
-    class={`relative group w-full h-fit flex flex-col gap-2 px-2 py-2 hover:bg-white/5`}
+    class={`relative group w-full h-fit flex flex-col gap-2 px-2 py-2 dark:hover:bg-white/2 hover:bg-base-200/30 rounded-2xl`}
   >
     {#if message instanceof Announcement}
       {@render announcementView(message)}
@@ -369,11 +378,13 @@
           {/if}
         </section>
 
-        <p
-          class="text-sm italic dz-prose dz-prose-invert min-w-0 max-w-full overflow-hidden text-ellipsis"
-        >
-          {@html getAnnouncementHtml(announcement)}
-        </p>
+        <Prose>
+          <div
+            class="text-sm italic min-w-0 max-w-full overflow-hidden text-ellipsis"
+          >
+            {@html getAnnouncementHtml(announcement)}
+          </div>
+        </Prose>
       </Button.Root>
     {:else if announcement.kind === "messageMoved"}
       {#if !mergeWithPrevious}
@@ -383,20 +394,24 @@
               isDrawerOpen = true;
             }
           }}
-          class="cursor-pointer flex gap-2 text-start w-full items-center text-info-content px-4 py-1 bg-info rounded-t"
+          class="cursor-pointer flex gap-2 text-start w-full items-center text-info-content px-4 py-1 bg-info rounded-t text-base-900 dark:text-base-100"
         >
           <Icon icon="prime:reply" width="12px" height="12px" />
-          <p
-            class="text-sm italic dz-prose-invert chat min-w-0 max-w-full overflow-hidden text-ellipsis"
-          >
-            {@html getAnnouncementHtml(announcement)}
-          </p>
+          <Prose>
+            <div
+              class="text-sm italic dz-prose-invert chat min-w-0 max-w-full overflow-hidden text-ellipsis"
+            >
+              {@html getAnnouncementHtml(announcement)}
+            </div>
+          </Prose>
           {#if message.createdDate}
             {@render timestamp(message.createdDate)}
           {/if}
         </Button.Root>
       {/if}
-      <div class="ml-0 border-l-2 border-info pt-0.5 pl-2">
+      <div
+        class="ml-0 border-l-2 border-info pt-0.5 pl-2 border-base-200 dark:border-base-800"
+      >
         {#if relatedMessage}
           {@render messageView(relatedMessage)}
         {/if}
@@ -419,16 +434,13 @@
           title={authorProfile.handle}
           target="_blank"
         >
-          <AvatarImage
-            handle={authorProfile.handle}
-            avatarUrl={authorProfile.avatarUrl}
-          />
+          <Avatar src={authorProfile.avatarUrl} />
         </a>
       {:else}
         <div class="w-11">
           {#if message.createdDate}
             <span
-              class="opacity-0 text-[8px] text-gray-300 transition-opacity duration-200 whitespace-nowrap group-hover:opacity-100"
+              class="opacity-0 text-[8px] text-base-900 dark:text-base-100 transition-opacity duration-200 whitespace-nowrap group-hover:opacity-100"
             >
               {format(message.createdDate, "pp")}
             </span>
@@ -492,7 +504,7 @@
               <a
                 href={`https://bsky.app/profile/${authorProfile.handle}`}
                 target="_blank"
-                class="text-primary hover:underline"
+                class="text-accent-600 dark:text-accent-400 hover:underline"
               >
                 <h5 class="font-bold" title={authorProfile.handle}>
                   {authorProfile.displayName || authorProfile.handle}
@@ -504,16 +516,17 @@
 
           <div class="flex flex-col gap-1">
             <!-- Using a fancy Tailwind trick to target all href elements inside of this parent -->
-            <span
-              class="dz-prose select-text [&_a]:text-primary [&_a]:hover:underline"
-            >
-              {@html getContentHtml(JSON.parse(msg.bodyJson))}
-            </span>
+
+            <div class="[&_img]:rounded-2xl">
+              <Prose>
+                {@html getContentHtml(JSON.parse(msg.bodyJson))}
+              </Prose>
+            </div>
 
             {#if isMessageEdited(msg)}
               <div class="relative group/edit">
                 <span
-                  class="text-xs text-gray-400 italic flex items-center gap-1 hover:text-gray-300 cursor-default"
+                  class="text-xs text-base-500 italic flex items-center gap-1 hover:text-base-300 cursor-default"
                 >
                   <Icon icon="mdi:pencil" width="12px" height="12px" />
                   <span>edited</span>
@@ -631,22 +644,24 @@
       </Drawer>
     {:else if !isEditing}
       <Toolbar.Root
-        class={`${!isEmojiToolbarPickerOpen && "hidden"} group-hover:flex absolute -top-2 right-0 bg-base-300 p-1 rounded items-center`}
+        class={`${!isEmojiToolbarPickerOpen && "hidden"} group-hover:flex absolute gap-1 -top-2 right-0 bg-base-200 dark:bg-base-800 p-1.5 px-2 rounded-2xl items-center`}
       >
-        <Toolbar.Button
-          onclick={() => toggleReaction("👍")}
-          class="dz-btn dz-btn-ghost dz-btn-square"
+        <FoxButton
+          variant="ghost"
+          size="icon"
+          onclick={() => toggleReaction("👍")}>👍</FoxButton
         >
-          👍
-        </Toolbar.Button>
-        <Toolbar.Button
-          onclick={() => toggleReaction("😂")}
-          class="dz-btn dz-btn-ghost dz-btn-square"
+
+        <FoxButton
+          variant="ghost"
+          size="icon"
+          onclick={() => toggleReaction("😂")}>😂</FoxButton
         >
-          😂
-        </Toolbar.Button>
+
         <Popover.Root bind:open={isEmojiToolbarPickerOpen}>
-          <Popover.Trigger class="dz-btn dz-btn-ghost dz-btn-square">
+          <Popover.Trigger
+            class={buttonVariants({ variant: "ghost", size: "icon" })}
+          >
             <Icon icon="lucide:smile-plus" />
           </Popover.Trigger>
           <Popover.Content class="z-10">
@@ -654,30 +669,29 @@
           </Popover.Content>
         </Popover.Root>
         {#if mayEdit}
-          <Toolbar.Button
-            onclick={() => startEditing()}
-            class="dz-btn dz-btn-ghost dz-btn-square"
-          >
+          <FoxButton variant="ghost" size="icon" onclick={() => startEditing()}>
             <Icon icon="tabler:edit" />
-          </Toolbar.Button>
+          </FoxButton>
         {/if}
 
         {#if shiftDown && mayDelete}
-          <Toolbar.Button
+          <FoxButton
+            variant="ghost"
+            size="icon"
             onclick={() => deleteMessage()}
-            class="dz-btn dz-btn-ghost dz-btn-square"
           >
             <Icon icon="tabler:trash" color="red" />
-          </Toolbar.Button>
+          </FoxButton>
         {/if}
 
         {#if authorProfile && message instanceof Message}
-          <Toolbar.Button
+          <FoxButton
+            variant="ghost"
+            size="icon"
             onclick={() => setReplyTo(message)}
-            class="dz-btn dz-btn-ghost dz-btn-square"
           >
             <Icon icon="fa6-solid:reply" />
-          </Toolbar.Button>
+          </FoxButton>
         {/if}
       </Toolbar.Root>
     {/if}
@@ -707,7 +721,7 @@
 
 {#snippet timestamp(date: Date)}
   {@const formattedDate = isToday(date) ? "Today" : format(date, "P")}
-  <time class="text-xs">
+  <time class="text-xs text-base-600 dark:text-base-400">
     {formattedDate}, {format(date, "pp")}
   </time>
 {/snippet}
@@ -741,20 +755,14 @@
     {#if messageRepliedTo.value && profileRepliedTo}
       <Button.Root
         onclick={scrollToReply}
-        class="cursor-pointer flex gap-2 text-sm text-start w-full items-center text-base-content px-4 py-1"
+        class="cursor-pointer flex gap-2 text-sm text-start w-full items-center text-base-900 dark:text-base-100 px-4 py-1 bg-base-900/20 rounded-2xl dark:bg-base-100/5"
       >
         <div class="flex basis-1/2 md:basis-auto gap-2 items-center">
           <Icon icon="prime:reply" width="12px" height="12px" />
-          <Avatar.Root class="w-4">
-            <Avatar.Image
-              src={profileRepliedTo.avatarUrl}
-              class="rounded-full"
-            />
-            <Avatar.Fallback>
-              <AvatarBeam name={profileRepliedTo.handle} />
-            </Avatar.Fallback>
-          </Avatar.Root>
-          <h5 class="text-base-content font-medium text-ellipsis">
+          <Avatar class="size-4" src={profileRepliedTo.avatarUrl} />
+          <h5
+            class="text-accent-600 dark:text-accent-400 font-medium text-ellipsis"
+          >
             {profileRepliedTo.handle}
           </h5>
         </div>

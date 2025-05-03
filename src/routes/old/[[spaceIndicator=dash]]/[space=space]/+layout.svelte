@@ -9,8 +9,6 @@
   import { derivePromise } from "$lib/utils.svelte";
   import { Message } from "@roomy-chat/sdk";
   import SidebarMain from "$lib/components/SidebarMain.svelte";
-  import Sidebar from "$lib/fox/Sidebar.svelte";
-  import Navbar from "$lib/fox/Navbar.svelte";
 
   let { children } = $props();
   let isMobile = $derived((outerWidth.current || 0) < 640);
@@ -84,26 +82,17 @@
 
   setContext("users", users);
   setContext("contextItems", contextItems);
-
-  const spaces = derivePromise(
-    [],
-    async () => (await g.roomy?.spaces.items()) || [],
-  );
 </script>
 
-<Sidebar {spaces} mobileOnly={false} visible={true} />
+{#if g.space}
+  <!-- Events/Room Content -->
+  <main
+    class="flex flex-col gap-4 p-4 grow min-w-0 h-full overflow-clip bg-base-100"
+  >
+    {@render children()}
+  </main>
 
-<Navbar hasSidebar />
-
-<div class="flex lg:ml-72 right-0 h-screen max-h-screen overflow-clip gap-0">
-  {#if g.space}
-    <!-- Events/Room Content -->
-    <main class="flex flex-col gap-4 p-4 grow min-w-0 h-full overflow-clip">
-      {@render children()}
-    </main>
-
-    <!-- If there is no space. -->
-  {:else}
-    <span class="dz-loading dz-loading-spinner mx-auto w-25"></span>
-  {/if}
-</div>
+  <!-- If there is no space. -->
+{:else}
+  <span class="dz-loading dz-loading-spinner mx-auto w-25"></span>
+{/if}

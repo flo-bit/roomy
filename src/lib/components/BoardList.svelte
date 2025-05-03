@@ -28,9 +28,7 @@
     <a
       href={`${page.params.space?.includes(".") ? "/-" : ""}/${page.params.space}/${route}/${item.id}`}
     >
-      <li
-        class="dz-list-row dz-card-title dz-join-item bg-base-200 text-md group w-full"
-      >
+      <li class="dz-list-row dz-card-title dz-join-item text-md group w-full">
         {item.name}
       </li>
     </a>

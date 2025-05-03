@@ -77,7 +77,10 @@
 </script>
 
 <ScrollArea.Root type="scroll" class="h-full overflow-hidden relative">
-  <ScrollArea.Viewport bind:ref={viewport} class="w-full max-w-full h-full">
+  <ScrollArea.Viewport
+    bind:ref={viewport}
+    class="w-full max-w-full h-full pt-16"
+  >
     <ol class="flex flex-col gap-2 max-w-full">
       <!--
         This use of `key` needs explaining. `key` causes the components below

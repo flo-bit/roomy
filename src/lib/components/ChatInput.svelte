@@ -12,6 +12,7 @@
   import { toast } from "svelte-french-toast";
   import { untrack } from "svelte";
   import { isEqual } from "underscore";
+  import { inputVariants } from "@fuxui/base";
 
   // Custom Image extension that adds a visual indicator for local images
   const CustomImage = Image.extend({
@@ -123,7 +124,7 @@
       editorProps: {
         attributes: {
           class:
-            "w-full px-3 py-2 rounded bg-base-300 text-base-content outline-none",
+            "w-full px-3 py-2 outline-none focus:ring-2 ring-1 ring-inset border-0 focus:transition-transform rounded-2xl text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed duration-300 active:duration-100 focus:ring-accent-500 dark:focus:ring-accent-500 ring-accent-500/30 dark:ring-accent-500/20 bg-accent-400/10 dark:bg-accent-600/10 text-accent-700 dark:text-accent-400 placeholder:text-accent-700/50 dark:placeholder:text-accent-400/50 rounded-2xl",
         },
       },
       onUpdate: (ctx) => {
@@ -469,7 +470,7 @@
           editorProps: {
             attributes: {
               class:
-                "w-full px-3 py-2 rounded bg-base-300 text-base-content outline-none",
+                "w-full px-3 py-2 outline-none focus:ring-2 ring-1 ring-inset border-0 focus:transition-transform rounded-2xl text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed duration-300 active:duration-100 focus:ring-accent-500 dark:focus:ring-accent-500 ring-accent-500/30 dark:ring-accent-500/20 bg-accent-400/10 dark:bg-accent-600/10 text-accent-700 dark:text-accent-400 placeholder:text-accent-700/50 dark:placeholder:text-accent-400/50 rounded-2xl",
             },
           },
           onUpdate: (ctx) => {
@@ -549,76 +550,6 @@
 
 {#if !g.isBanned}
   <div class="flex items-center gap-2">
-    <!-- Plus icon button for image upload -->
-    {#if !editMode}
-      <button
-        type="button"
-        class="p-1 rounded hover:bg-base-200 disabled:opacity-50 cursor-pointer"
-        aria-label="Upload image"
-        use:handleClick
-        tabindex="-1"
-        disabled={tiptap == null || isUploading}
-        title={isUploading
-          ? "Uploading..."
-          : localImages.size > 0
-            ? `${localImages.size} image${localImages.size > 1 ? "s" : ""} will be uploaded when you send`
-            : "Upload image"}
-      >
-        {#if isUploading}
-          <!-- Loading spinner -->
-          <div class="animate-spin h-5 w-5">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-          </div>
-        {:else}
-          <!-- Regular upload icon -->
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect
-              x="9"
-              y="4"
-              width="2"
-              height="12"
-              rx="1"
-              fill="currentColor"
-            />
-            <rect
-              x="4"
-              y="9"
-              width="12"
-              height="2"
-              rx="1"
-              fill="currentColor"
-            />
-          </svg>
-        {/if}
-      </button>
-      <!-- Hidden file input for image upload -->
-      <input
-        type="file"
-        accept="image/*"
-        bind:this={fileInput}
-        class="hidden"
-        use:handleChange
-        tabindex="-1"
-      />
-    {/if}
     <!-- Tiptap editor -->
     <div
       bind:this={element}
@@ -652,7 +583,7 @@
 <style>
   /* Style for local image previews */
   :global(.local-image) {
-    border: 2px dashed #3498db !important;
+    border: 2px dashed var(--color-accent-500) !important;
     border-radius: 4px !important;
     padding: 2px !important;
   }
