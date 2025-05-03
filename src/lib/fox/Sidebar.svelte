@@ -57,50 +57,55 @@
     </div>
 
     <Accordion type="multiple" class="w-full" value={["channels", "threads"]}>
-      <AccordionItem
-        class="border-0"
-        title="Channels"
-        value="channels"
-        triggerClasses="text-sm px-3 py-1 font-semibold"
-        contentClasses="flex flex-col gap-1 items-start px-1"
-      >
-        {#each sidebarItems.value as item}
-          <Button
-            onclick={(e: MouseEvent) => {
-              navigate({
-                space: page.params.space!,
-                channel: item.id,
-              });
-              handleClick(e);
-            }}
-            data-current={g.channel?.id === item.id}
-            variant="ghost"
-            class="w-full justify-start">{item.name}</Button
-          >
-        {/each}
-      </AccordionItem>
+      {#if sidebarItems.value.length}
+        <AccordionItem
+          class="border-0"
+          title="Channels"
+          value="channels"
+          triggerClasses="text-sm px-3 py-1 font-semibold"
+          contentClasses="flex flex-col gap-1 items-start px-1"
+        >
+          {#each sidebarItems.value as item}
+            <Button
+              onclick={(e: MouseEvent) => {
+                navigate({
+                  space: page.params.space!,
+                  channel: item.id,
+                });
+                handleClick(e);
+              }}
+              data-current={g.channel?.id === item.id}
+              variant="ghost"
+              class="w-full justify-start">{item.name}</Button
+            >
+          {/each}
+        </AccordionItem>
+      {/if}
 
-      <AccordionItem
-        class="border-0"
-        title="Threads"
-        value="threads"
-        triggerClasses="text-sm px-3 py-1 font-semibold"
-        contentClasses="flex flex-col gap-1 items-start px-1"
-      >
-        {#each availableThreads.value as item}
-          <Button
-            onclick={(e: MouseEvent) => {
-              navigate({
-                space: page.params.space!,
-                channel: item.id,
-              });
-              handleClick(e);
-            }}
-            variant="ghost"
-            class="w-full justify-start">{item.name}</Button
-          >
-        {/each}
-      </AccordionItem>
+      {#if availableThreads.value.length}
+        <AccordionItem
+          class="border-0"
+          title="Threads"
+          value="threads"
+          triggerClasses="text-sm px-3 py-1 font-semibold"
+          contentClasses="flex flex-col gap-1 items-start px-1"
+        >
+          {#each availableThreads.value as item}
+            <Button
+              onclick={(e: MouseEvent) => {
+                navigate({
+                  space: page.params.space!,
+                  channel: item.id,
+                });
+                handleClick(e);
+              }}
+              data-current={g.channel?.id === item.id}
+              variant="ghost"
+              class="w-full justify-start">{item.name}</Button
+            >
+          {/each}
+        </AccordionItem>
+      {/if}
     </Accordion>
   </div>
 </Sidebar>

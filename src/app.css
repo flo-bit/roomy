@@ -366,3 +366,8 @@
     --base-950: var(--color-slate-950);
   }
 }
+
+emoji-picker {
+  --background: transparent;
+  --border-color: transparent;
+}

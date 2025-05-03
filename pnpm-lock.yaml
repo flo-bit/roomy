@@ -77,6 +77,9 @@ importers:
       svelte-french-toast:
         specifier: 2.0.0-alpha.0
         version: 2.0.0-alpha.0(svelte@5.28.2)
+      svelte-relative-time:
+        specifier: ^0.0.6
+        version: 0.0.6(svelte@5.28.2)
       svelte-tiptap:
         specifier: ^2.1.0
         version: 2.1.0(@tiptap/core@2.11.9(@tiptap/pm@2.11.9))(@tiptap/extension-bubble-menu@2.11.9(@tiptap/core@2.11.9(@tiptap/pm@2.11.9))(@tiptap/pm@2.11.9))(@tiptap/extension-floating-menu@2.11.9(@tiptap/core@2.11.9(@tiptap/pm@2.11.9))(@tiptap/pm@2.11.9))(@tiptap/pm@2.11.9)(svelte@5.28.2)
@@ -2510,6 +2513,11 @@ packages:
     resolution: {integrity: sha512-81wcVaY9UZ/0JuzLEizMSoIXqNbX7yhfTZavBuw94T3cnT2HmJ9O+qXY/c91h9FkeMwboo0KHZVmzOEQVTXDFg==}
     peerDependencies:
       svelte: ^5.0.0
+
+  svelte-relative-time@0.0.6:
+    resolution: {integrity: sha512-gYaQz2QxE//7WTh13IbQCwN99+lxQ9rpOZ8+bBew6tQ8iNqmJw422/oeTP9y5kUs2Y/BSz9z749+Co/yr4lexg==, tarball: https://registry.npmjs.org/svelte-relative-time/-/svelte-relative-time-0.0.6.tgz}
+    peerDependencies:
+      svelte: ^3.54.0 || ^4.0.0 || ^5.0.0
 
   svelte-render-scan@1.1.0:
     resolution: {integrity: sha512-9S73wEtcnn9Hn0HsOSufm+AC+3Es2rMXoWMEWk6Fa3w3yORBg6khOSsZ8+kj/rY4BJRZTyjuFQBytFPGC8YHGQ==}
@@ -5609,6 +5617,10 @@ snapshots:
     dependencies:
       svelte: 5.28.2
       svelte-writable-derived: 3.1.1(svelte@5.28.2)
+
+  svelte-relative-time@0.0.6(svelte@5.28.2):
+    dependencies:
+      svelte: 5.28.2
 
   svelte-render-scan@1.1.0(svelte@5.28.2):
     dependencies:

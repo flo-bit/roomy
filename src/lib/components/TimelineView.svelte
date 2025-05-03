@@ -24,6 +24,7 @@
   import type { JSONContent } from "@tiptap/core";
   import { getProfile } from "$lib/profile.svelte";
   import TimelineToolbar from "$lib/components/TimelineToolbar.svelte";
+  import { Avatar } from "@fuxui/base";
 
   let isMobile = $derived((outerWidth.current ?? 0) < 640);
 
@@ -183,18 +184,20 @@
             class="flex justify-between bg-secondary text-secondary-content rounded-t-lg px-4 py-2"
           >
             <div class="flex flex-col gap-1">
-              <h5 class="flex gap-2 items-center">
+              <h5
+                class="flex gap-2 items-center text-base-700 dark:text-base-400 text-sm"
+              >
                 Replying to
                 {#await getProfile(replyingTo.authors( (x) => x.get(0), )) then profile}
-                  <AvatarImage
-                    handle={profile.handle || ""}
-                    avatarUrl={profile.avatarUrl}
-                    className="!w-4"
-                  />
-                  <strong>{profile.handle}</strong>
+                  <Avatar src={profile.avatarUrl} class="size-5" />
+                  <strong class="text-accent-700 dark:text-accent-400"
+                    >{profile.handle}</strong
+                  >
                 {/await}
               </h5>
-              <p class="text-primary-content text-ellipsis italic">
+              <p
+                class="text-base-900 dark:text-base-100 text-ellipsis italic pb-2"
+              >
                 {@html getContentHtml(JSON.parse(replyingTo.bodyJson))}
               </p>
             </div>
@@ -231,10 +234,6 @@
           <!-- Image upload button is now in ChatInput.svelte -->
         </div>
       </section>
-    {/if}
-
-    {#if isMobile}
-      <TimelineToolbar {createThread} bind:threadTitleInput />
     {/if}
   </div>
 {/if}

@@ -21,8 +21,9 @@
     Prose,
     Avatar,
     Button as FoxButton,
-    buttonVariants,
+    Popover as FoxPopover,
   } from "@fuxui/base";
+  import RelativeTime from "svelte-relative-time";
 
   type Props = {
     message: Message | Announcement;
@@ -327,10 +328,7 @@
 
 <svelte:window onkeydown={onKeydown} onkeyup={onKeyup} />
 
-<div
-  id={message.id}
-  class={`flex flex-col ${isMobile && "max-w-screen"} py-1.5`}
->
+<div id={message.id} class={`flex flex-col max-w-screen py-0`}>
   <div
     class={`relative group w-full h-fit flex flex-col gap-2 px-2 py-2 dark:hover:bg-white/2 hover:bg-base-200/30 rounded-2xl`}
   >
@@ -346,14 +344,14 @@
         {#each Object.keys(message.reactions.all()) as reaction}
           {@render reactionToggle(reaction)}
         {/each}
-        <Popover.Root bind:open={isEmojiRowPickerOpen}>
-          <Popover.Trigger class="p-2 hover:bg-white/5 rounded cursor-pointer">
-            <Icon icon="lucide:smile-plus" class="text-primary" />
-          </Popover.Trigger>
-          <Popover.Content class="z-10">
-            <emoji-picker bind:this={emojiRowPicker}></emoji-picker>
-          </Popover.Content>
-        </Popover.Root>
+        <FoxPopover>
+          {#snippet child({ props })}
+            <FoxButton variant="ghost" size="icon" {...props}>
+              <Icon icon="lucide:smile-plus" class="text-primary" />
+            </FoxButton>
+          {/snippet}
+          <emoji-picker bind:this={emojiRowPicker}></emoji-picker>
+        </FoxPopover>
       </div>
     {/if}
   </div>
@@ -362,7 +360,7 @@
 {#snippet announcementView(announcement: Announcement)}
   {@const relatedMessage = relatedMessages.value[0]}
   {@render toolbar()}
-  <div class="flex flex-col gap-4 pl-14">
+  <div class="flex flex-col gap-4">
     {#if announcement.kind === "threadCreated"}
       <Button.Root
         onclick={() => {
@@ -436,7 +434,7 @@
         >
           <Avatar src={authorProfile.avatarUrl} />
         </a>
-      {:else}
+        <!-- {:else}
         <div class="w-11">
           {#if message.createdDate}
             <span
@@ -445,7 +443,9 @@
               {format(message.createdDate, "pp")}
             </span>
           {/if}
-        </div>
+        </div> -->
+      {:else}
+        <div class="w-11 h-1"></div>
       {/if}
 
       {#if isEditing && message === msg}
@@ -457,11 +457,14 @@
                 target="_blank"
                 class="text-primary hover:underline"
               >
-                <h5 class="font-bold" title={authorProfile.handle}>
+                <h5
+                  class="font-bold text-accent-700 dark:text-accent-400"
+                  title={authorProfile.handle}
+                >
                   {authorProfile.displayName || authorProfile.handle}
                 </h5>
               </a>
-              {@render timestamp(message.createdDate || new Date())}
+              <!-- {@render timestamp(message.createdDate || new Date())} -->
             </section>
           {/if}
 
@@ -479,15 +482,12 @@
           </div>
 
           <div class="flex justify-end gap-2 mt-2">
-            <Button.Root onclick={cancelEditing} class="btn btn-sm btn-ghost">
+            <FoxButton variant="secondary" size="sm" onclick={cancelEditing}>
               Cancel
-            </Button.Root>
-            <Button.Root
-              onclick={saveEditedMessage}
-              class="btn btn-sm btn-primary"
-            >
+            </FoxButton>
+            <FoxButton variant="primary" size="sm" onclick={saveEditedMessage}>
               Save
-            </Button.Root>
+            </FoxButton>
           </div>
         </div>
       {:else}
@@ -515,8 +515,6 @@
           {/if}
 
           <div class="flex flex-col gap-1">
-            <!-- Using a fancy Tailwind trick to target all href elements inside of this parent -->
-
             <div class="[&_img]:rounded-2xl">
               <Prose>
                 {@html getContentHtml(JSON.parse(msg.bodyJson))}
@@ -576,38 +574,41 @@
     {#if isMobile}
       <Drawer bind:isDrawerOpen>
         <div class="flex gap-4 justify-center mb-4">
-          <Button.Root
+          <FoxButton
             onclick={() => {
               toggleReaction("👍");
               isDrawerOpen = false;
             }}
-            class="dz-btn dz-btn-circle"
+            variant="ghost"
+            size="icon"
           >
             👍
-          </Button.Root>
-          <Button.Root
+          </FoxButton>
+          <FoxButton
             onclick={() => {
               toggleReaction("😂");
               isDrawerOpen = false;
             }}
-            class="dz-btn dz-btn-circle"
+            variant="ghost"
+            size="icon"
           >
             😂
-          </Button.Root>
-          <Popover.Root bind:open={isEmojiDrawerPickerOpen}>
-            <Popover.Trigger class="dz-btn dz-btn-circle">
-              <Icon icon="lucide:smile-plus" />
-            </Popover.Trigger>
-            <Popover.Content class="z-10">
-              <emoji-picker bind:this={emojiDrawerPicker}></emoji-picker>
-            </Popover.Content>
-          </Popover.Root>
+          </FoxButton>
+
+          <FoxPopover>
+            {#snippet child({ props })}
+              <FoxButton variant="ghost" size="icon" {...props}>
+                <Icon icon="lucide:smile-plus" class="text-primary" />
+              </FoxButton>
+            {/snippet}
+            <emoji-picker bind:this={emojiRowPicker}></emoji-picker>
+          </FoxPopover>
         </div>
 
         {#if authorProfile}
-          <div class="dz-join dz-join-vertical w-full">
+          <div class="flex flex-col gap-2 w-full">
             {#if message instanceof Message}
-              <Button.Root
+              <FoxButton
                 onclick={() => {
                   setReplyTo(message);
                   isDrawerOpen = false;
@@ -616,10 +617,10 @@
               >
                 <Icon icon="fa6-solid:reply" />
                 Reply
-              </Button.Root>
+              </FoxButton>
             {/if}
             {#if mayEdit}
-              <Button.Root
+              <FoxButton
                 onclick={() => {
                   startEditing();
                   isDrawerOpen = false;
@@ -628,16 +629,16 @@
               >
                 <Icon icon="tabler:edit" />
                 Edit
-              </Button.Root>
+              </FoxButton>
             {/if}
             {#if mayDelete}
-              <Button.Root
+              <FoxButton
                 onclick={() => deleteMessage()}
                 class="dz-join-item dz-btn dz-btn-error w-full"
               >
                 <Icon icon="tabler:trash" />
                 Delete
-              </Button.Root>
+              </FoxButton>
             {/if}
           </div>
         {/if}
@@ -657,17 +658,14 @@
           size="icon"
           onclick={() => toggleReaction("😂")}>😂</FoxButton
         >
-
-        <Popover.Root bind:open={isEmojiToolbarPickerOpen}>
-          <Popover.Trigger
-            class={buttonVariants({ variant: "ghost", size: "icon" })}
-          >
-            <Icon icon="lucide:smile-plus" />
-          </Popover.Trigger>
-          <Popover.Content class="z-10">
-            <emoji-picker bind:this={emojiToolbarPicker}></emoji-picker>
-          </Popover.Content>
-        </Popover.Root>
+        <FoxPopover>
+          {#snippet child({ props })}
+            <FoxButton variant="ghost" size="icon" {...props}>
+              <Icon icon="lucide:smile-plus" class="text-primary" />
+            </FoxButton>
+          {/snippet}
+          <emoji-picker bind:this={emojiRowPicker}></emoji-picker>
+        </FoxPopover>
         {#if mayEdit}
           <FoxButton variant="ghost" size="icon" onclick={() => startEditing()}>
             <Icon icon="tabler:edit" />
@@ -720,29 +718,27 @@
 {/snippet}
 
 {#snippet timestamp(date: Date)}
-  {@const formattedDate = isToday(date) ? "Today" : format(date, "P")}
-  <time class="text-xs text-base-600 dark:text-base-400">
-    {formattedDate}, {format(date, "pp")}
-  </time>
+  <RelativeTime
+    {date}
+    locale="en"
+    class="text-xs text-base-600 dark:text-base-400"
+  />
 {/snippet}
 
 {#snippet reactionToggle(reaction: string)}
   {@const reactions = message.reactions.all()[reaction]}
   {#if reactions}
     {#await Promise.all([...reactions.values()].map( (x) => getProfile(x), )) then profilesThatReacted}
-      <Button.Root
+      <FoxButton
         onclick={() => toggleReaction(reaction)}
-        class={`
-      dz-btn
-      ${user.agent && reactions.has(user.agent.assertDid) ? "bg-secondary text-secondary-content" : "bg-secondary/30 hover:bg-secondary/50 text-base-content"}
-    `}
+        variant="ghost"
         title={profilesThatReacted
           .map((x) => x.displayName || x.handle)
           .join(", ")}
       >
         {reaction}
         {message.reactions.all()[reaction]?.size}
-      </Button.Root>
+      </FoxButton>
     {/await}
   {/if}
 {/snippet}
@@ -755,7 +751,7 @@
     {#if messageRepliedTo.value && profileRepliedTo}
       <Button.Root
         onclick={scrollToReply}
-        class="cursor-pointer flex gap-2 text-sm text-start w-full items-center text-base-900 dark:text-base-100 px-4 py-1 bg-base-900/20 rounded-2xl dark:bg-base-100/5"
+        class="cursor-pointer flex flex-col gap-2 text-sm text-start w-full items-start text-base-900 dark:text-base-100 px-4 py-2 bg-base-900/20 rounded-2xl dark:bg-base-100/5"
       >
         <div class="flex basis-1/2 md:basis-auto gap-2 items-center">
           <Icon icon="prime:reply" width="12px" height="12px" />

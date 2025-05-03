@@ -12,7 +12,12 @@
   import { toast } from "svelte-french-toast";
   import { untrack } from "svelte";
   import { isEqual } from "underscore";
-  import { inputVariants } from "@fuxui/base";
+  import { cn, inputVariants } from "@fuxui/base";
+
+  let editorClasses = cn(
+    inputVariants({ variant: "primary", sizeVariant: "lg" }),
+    "w-full px-3 py-2 outline-none font-normal",
+  );
 
   // Custom Image extension that adds a visual indicator for local images
   const CustomImage = Image.extend({
@@ -123,8 +128,7 @@
       content: content.type ? content : { type: "doc", content: [] },
       editorProps: {
         attributes: {
-          class:
-            "w-full px-3 py-2 outline-none focus:ring-2 ring-1 ring-inset border-0 focus:transition-transform rounded-2xl text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed duration-300 active:duration-100 focus:ring-accent-500 dark:focus:ring-accent-500 ring-accent-500/30 dark:ring-accent-500/20 bg-accent-400/10 dark:bg-accent-600/10 text-accent-700 dark:text-accent-400 placeholder:text-accent-700/50 dark:placeholder:text-accent-400/50 rounded-2xl",
+          class: editorClasses,
         },
       },
       onUpdate: (ctx) => {
@@ -469,8 +473,7 @@
             : { type: "doc", content: [] },
           editorProps: {
             attributes: {
-              class:
-                "w-full px-3 py-2 outline-none focus:ring-2 ring-1 ring-inset border-0 focus:transition-transform rounded-2xl text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed duration-300 active:duration-100 focus:ring-accent-500 dark:focus:ring-accent-500 ring-accent-500/30 dark:ring-accent-500/20 bg-accent-400/10 dark:bg-accent-600/10 text-accent-700 dark:text-accent-400 placeholder:text-accent-700/50 dark:placeholder:text-accent-400/50 rounded-2xl",
+              class: editorClasses,
             },
           },
           onUpdate: (ctx) => {

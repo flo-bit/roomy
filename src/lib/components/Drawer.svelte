@@ -28,9 +28,9 @@
 
   <Drawer.Portal>
     <Drawer.Overlay class="fixed inset-0 bg-black/40" />
-    <Drawer.Content class="flex flex-col mt-24 fixed bottom-0 left-0 right-0">
+    <Drawer.Content class="flex flex-col mt-24 fixed bottom-0 left-1 right-1">
       <div
-        class=" bg-base-200 dark:bg-base-800 h-fit min-h-32 rounded-t-xl px-4 py-8"
+        class=" bg-base-200 dark:bg-base-900 border border-base-300 dark:border-base-800 h-fit min-h-32 rounded-t-xl px-4 py-8"
       >
         {#if title}
           <Drawer.Title>{title}</Drawer.Title>

@@ -52,6 +52,7 @@
     "svelte": "^5.23.1",
     "svelte-boring-avatars": "^1.2.6",
     "svelte-french-toast": "2.0.0-alpha.0",
+    "svelte-relative-time": "^0.0.6",
     "svelte-tiptap": "^2.1.0",
     "underscore": "^1.13.7",
     "vaul-svelte": "^0.3.2",
