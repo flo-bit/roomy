@@ -76,7 +76,7 @@
               }}
               data-current={g.channel?.id === item.id}
               variant="ghost"
-              class="w-full justify-start">{item.name}</Button
+              class="w-full justify-start backdrop-blur-none">{item.name}</Button
             >
           {/each}
         </AccordionItem>
@@ -101,7 +101,7 @@
               }}
               data-current={g.channel?.id === item.id}
               variant="ghost"
-              class="w-full justify-start">{item.name}</Button
+              class="w-full justify-start backdrop-blur-none">{item.name}</Button
             >
           {/each}
         </AccordionItem>

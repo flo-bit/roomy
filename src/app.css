@@ -46,17 +46,17 @@
     --accent-900: var(--color-pink-900);
     --accent-950: var(--color-pink-950);
 
-    --base-50: var(--color-stone-50);
-    --base-100: var(--color-stone-100);
-    --base-200: var(--color-stone-200);
-    --base-300: var(--color-stone-300);
-    --base-400: var(--color-stone-400);
-    --base-500: var(--color-stone-500);
-    --base-600: var(--color-stone-600);
-    --base-700: var(--color-stone-700);
-    --base-800: var(--color-stone-800);
-    --base-900: var(--color-stone-900);
-    --base-950: var(--color-stone-950);
+    --base-50: var(--color-zinc-50);
+    --base-100: var(--color-zinc-100);
+    --base-200: var(--color-zinc-200);
+    --base-300: var(--color-zinc-300);
+    --base-400: var(--color-zinc-400);
+    --base-500: var(--color-zinc-500);
+    --base-600: var(--color-zinc-600);
+    --base-700: var(--color-zinc-700);
+    --base-800: var(--color-zinc-800);
+    --base-900: var(--color-zinc-900);
+    --base-950: var(--color-zinc-950);
   }
 
   .red {

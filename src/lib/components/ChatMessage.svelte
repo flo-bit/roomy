@@ -51,6 +51,8 @@
   let users: { value: Item[] } = getContext("users");
   let contextItems: { value: Item[] } = getContext("contextItems");
 
+  let isEmojiToolbarPickerOpen = $state(false);
+
   // Editing state
   let isEditing = $state(false);
   let editMessageContent: JSONContent = $state({});
@@ -616,7 +618,7 @@
       </Drawer>
     {:else if !isEditing}
       <Toolbar.Root
-        class={`hidden group-hover:flex absolute gap-1 -top-2 right-0 bg-base-200 dark:bg-base-800 p-1.5 px-2 rounded-2xl items-center`}
+        class={`${!isEmojiToolbarPickerOpen && "hidden"} group-hover:flex absolute gap-1 -top-2 right-0 bg-base-200 dark:bg-base-800 p-1.5 px-2 rounded-2xl items-center`}
       >
         <FoxButton
           variant="ghost"
@@ -633,7 +635,9 @@
         <PopoverEmojiPicker
           onpicked={(emoji) => {
             pickedEmoji(emoji.unicode);
+            isEmojiToolbarPickerOpen = false;
           }}
+          bind:open={isEmojiToolbarPickerOpen}
         >
           {#snippet child({ props })}
             <FoxButton variant="ghost" size="icon" {...props}>

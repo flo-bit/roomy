@@ -8,11 +8,11 @@
   let { hasSidebar = false, showLogo = true } = $props();
 </script>
 
-<Navbar {hasSidebar} class="lg:left-72 xl:left-72">
+<Navbar {hasSidebar} class="lg:left-74">
   <div class="flex items-center gap-2">
     <Button
       variant="link"
-      class="block font-normal lg:hidden"
+      class="block font-normal lg:hidden backdrop-blur-none"
       popovertarget="mobile-menu"
     >
       <svg
