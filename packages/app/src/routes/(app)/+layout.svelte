@@ -24,7 +24,9 @@
 
   const me = new AccountCoState(RoomyAccount, {
     resolve: {
-      profile: true,
+      profile: {
+        $onError: null,
+      },
       root: true,
     },
   });
@@ -81,7 +83,7 @@
     } catch (e) {
       recordChecked = await setProfileRecord(
         me.current?.id,
-        me.current?.profile.id,
+        me.current?.profile?.id,
       );
     }
   }
@@ -109,15 +111,27 @@
   });
 
   $effect(() => {
-    if (!user.profile.data?.handle || !me.current) return;
+    if (!user.profile.data?.handle || !me.current) {
+      console.log("couldnt find handle or me");
+      return;
+    }
 
-    if(!me.current.profile.newJoinedSpacesTest === null) {
+    if(!me.current.profile) {
+      console.log("couldnt find profile");
+      return;
+    }
+
+    console.log("me.current.profile", me.current.profile);
+    console.log("me.current.profile.newJoinedSpacesTest", me.current.profile.newJoinedSpacesTest);
+
+    if(me.current.profile.newJoinedSpacesTest === undefined) {
+      console.log("couldnt find newJoinedSpacesTest, creating new one");
       me.current.profile.newJoinedSpacesTest = RoomyEntityList.create([], publicGroup("reader"));
     }
 
-    if(!me.current.profile.joinedDate === null) {
+    if(!me.current.profile?.joinedDate === undefined) {
+      console.log("couldnt find joinedDate, creating new one");
       me.current.profile.joinedDate = new Date();
-      console.log("joined date", me.current.profile.joinedDate);
     }
 
     if (me.current.profile.name !== user.profile.data?.handle) {
@@ -140,6 +154,8 @@
       me.current.profile.description = user.profile.data?.description;
     }
   });
+
+  $inspect(me.current?.profile?.newJoinedSpacesTest);
 
   onMount(async () => {
     await user.init();
