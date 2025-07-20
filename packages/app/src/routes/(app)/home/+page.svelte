@@ -1,64 +1,59 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
-  import { Button } from "bits-ui";
   import { user } from "$lib/user.svelte";
-  import { AccountCoState } from "jazz-svelte";
-  import { RoomyAccount } from "$lib/jazz/schema";
+  import { AccountCoState } from "jazz-tools/svelte";
+  import { RoomyAccount } from "@roomy-chat/sdk";
+  import { Button } from "@fuxui/base";
+  import { blueskyLoginModalState } from "@fuxui/social";
+  import MainLayout from "$lib/components/layout/MainLayout.svelte";
+  import SpaceButton from "$lib/components/SpaceButton.svelte";
 
   const account = new AccountCoState(RoomyAccount, {
     resolve: {
       profile: {
-        joinedSpaces: {
-          $each: true,
-          $onError: null,
-        },
+        newJoinedSpacesTest: true,
       },
     },
   });
   const me = $derived(account.current);
-  let spaces = $derived(me?.profile?.joinedSpaces);
+  let spaces = $derived(me?.profile?.newJoinedSpacesTest);
 </script>
 
-<div class="dz-hero bg-base-200 min-h-screen overflow-y-scroll">
-  <div class="dz-hero-content">
+<MainLayout>
+  <div
+    class="flex flex-col items-center justify-start py-8 overflow-y-auto px-4"
+  >
     <div class="flex flex-col gap-8 items-center">
-      <h1 class="text-5xl font-bold text-center">Hi Roomy 👋</h1>
-      <p class="text-lg font-medium max-w-2xl text-center">
+      <h1
+        class="text-5xl font-bold text-center text-base-950 dark:text-base-50"
+      >
+        Hi Roomy 👋
+      </h1>
+      <p class="text-lg font-medium max-w-2xl text-center text-pretty">
         A digital gardening platform for communities. Flourish in Spaces,
         curating knowledge and conversations together.
       </p>
-      <div>Hello {me?.profile.name}!</div>
       <div class="divider"></div>
 
       {#if !user.session}
         <div class="flex gap-4">
-          <Button.Root
-            onclick={() => (user.isLoginDialogOpen = true)}
-            class="dz-btn dz-btn-primary"
+          <Button
+            onclick={() => (blueskyLoginModalState.open = true)}
+            size="lg"
           >
             Create Account or Log In
-          </Button.Root>
+          </Button>
         </div>
       {:else if !spaces}
         <span class="dz-loading dz-loading-spinner mx-auto w-25"></span>
       {:else if spaces.length > 0}
-        <h2 class="text-3xl font-bold">Your Spaces</h2>
-        <section class="flex flex-wrap justify-center gap-4 max-w-5xl">
-          {#each spaces as space}
-            <a
-              href={`/${space?.id}`}
-              class="dz-card border border-base-300 hover:border-primary bg-base-100 transition-colors cursor-pointer text-base-content w-full md:w-96"
-            >
-              <div class="dz-card-body flex-row items-center justify-between">
-                <h2 class="dz-card-title">{space?.name}</h2>
-                <div class="dz-card-actions">
-                  <Icon
-                    icon="lucide:circle-arrow-right"
-                    class="text-2xl text-primary"
-                  />
-                </div>
-              </div>
-            </a>
+        <h2 class="text-3xl font-bold text-base-900 dark:text-base-100">
+          Your Spaces
+        </h2>
+        <section
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 max-w-5xl"
+        >
+          {#each new Set(spaces.toReversed()) as space}
+            <SpaceButton {space} />
           {/each}
         </section>
       {:else if spaces?.length === 0}
@@ -70,4 +65,4 @@
       {/if}
     </div>
   </div>
-</div>
+</MainLayout>

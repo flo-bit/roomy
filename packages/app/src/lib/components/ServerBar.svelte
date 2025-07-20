@@ -1,140 +1,106 @@
 <script lang="ts">
-  import { user } from "$lib/user.svelte";
   import { navigate } from "$lib/utils.svelte";
-  import { Button, Portal } from "bits-ui";
   import Icon from "@iconify/svelte";
-  import Dialog from "$lib/components/Dialog.svelte";
-  import ThemeSelector from "$lib/components/ThemeSelector.svelte";
   import SidebarSpace from "$lib/components/SidebarSpace.svelte";
-  import { focusOnRender } from "$lib/actions/useFocusOnRender.svelte";
-  import { env } from "$env/dynamic/public";
   import { co } from "jazz-tools";
-  import { createSpace, createSpaceList } from "$lib/jazz/utils";
-  import { RoomyAccount, Space, SpaceList } from "$lib/jazz/schema";
-  import Login from "./Login.svelte";
-  import { CoState } from "jazz-svelte";
+  import { RoomyAccount, RoomyEntity, RoomyEntityList } from "@roomy-chat/sdk";
+  import { CoState } from "jazz-tools/svelte";
   import { page } from "$app/state";
+  import {
+    TooltipProvider,
+    Button,
+    ThemeToggle,
+    ScrollArea,
+  } from "@fuxui/base";
+  import { SelectThemePopover } from "@fuxui/colors";
+  import CreateSpaceModal from "./modals/CreateSpaceModal.svelte";
+  import User from "./User.svelte";
+  import { user } from "$lib/user.svelte";
 
   let {
     spaces,
-    visible,
     me,
   }: {
-    spaces: co.loaded<typeof SpaceList> | undefined | null;
-    visible: boolean;
+    spaces: co.loaded<typeof RoomyEntityList> | undefined | null;
     me: co.loaded<typeof RoomyAccount> | undefined | null;
   } = $props();
 
-  let newSpaceName = $state("");
   let isNewSpaceDialogOpen = $state(false);
 
-  let openSpace = $derived(new CoState(Space, page.params.space));
+  let openSpace = $derived(new CoState(RoomyEntity, page.params.space));
 
   let isOpenSpaceJoined = $derived(
-    me?.profile?.joinedSpaces?.some((x) => x?.id === openSpace.current?.id),
+    me?.profile?.newJoinedSpacesTest?.some((x) => x?.id === openSpace.current?.id),
   );
-
-  async function createSpaceSubmit(evt: Event) {
-    evt.preventDefault();
-    if (!newSpaceName) return;
-
-    if (me?.profile && me.profile.joinedSpaces === undefined) {
-      me.profile.joinedSpaces = createSpaceList();
-    }
-
-    const space = createSpace(newSpaceName);
-
-    me?.profile?.joinedSpaces?.push(space);
-
-    newSpaceName = "";
-
-    isNewSpaceDialogOpen = false;
-
-    console.log("navigating to space", space.id);
-    navigate({ space: space.id });
-  }
 </script>
 
-<!-- Width manually set for transition to w-0 -->
-<aside
-  class="flex flex-col justify-between align-center h-screen {visible
-    ? 'w-[60px] px-1 border-r-2'
-    : 'w-[0]'} py-2 border-base-200 bg-base-300 transition-[width] duration-100 ease-out"
-  class:opacity-0={!visible}
->
-  <div class="flex flex-col gap-1 items-center">
-    <button
+<TooltipProvider>
+  <div class="flex flex-col gap-1 items-center justify-center pt-2">
+    <Button
+      variant="link"
       type="button"
       onclick={() => navigate("home")}
-      class="dz-btn dz-btn-ghost px-1 w-full aspect-square"
+      class="px-0 aspect-square [&_svg]:size-8"
+      data-current={page.url.pathname.startsWith("/home")}
     >
-      <Icon icon="iconamoon:home-fill" font-size="1.75em" />
-    </button>
+      <Icon icon="tabler:home" font-size="1.75em" />
+    </Button>
 
-    {#if me?.profile?.blueskyHandle}
-      <Dialog
-        title="Create Space"
-        description="Create a new public chat space"
-        bind:isDialogOpen={isNewSpaceDialogOpen}
+    {#if user.session}
+      <!-- Messages Button -->
+      <Button
+        href="/messages"
+        variant="link"
+        data-current={page.url.pathname.startsWith("/messages")}
+        class="aspect-square [&_svg]:size-8"
+        title="Direct Messages"
       >
-        {#snippet dialogTrigger()}
-          <Button.Root
-            title="Create Space"
-            class="p-2 aspect-square rounded-lg hover:bg-base-200 cursor-pointer"
-          >
-            <Icon icon="basil:add-solid" font-size="2em" />
-          </Button.Root>
-        {/snippet}
+        <Icon icon="tabler:mail" font-size="1.75em" />
+      </Button>
 
-        <form
-          id="createSpace"
-          class="flex flex-col gap-4"
-          onsubmit={createSpaceSubmit}
-        >
-          <input
-            bind:value={newSpaceName}
-            use:focusOnRender
-            placeholder="Name"
-            class="dz-input w-full"
-            type="text"
-            required
-          />
-          <Button.Root disabled={!newSpaceName} class="dz-btn dz-btn-primary">
-            <Icon icon="basil:add-outline" font-size="1.8em" />
-            Create Space
-          </Button.Root>
-        </form>
-      </Dialog>
+      <CreateSpaceModal {me} bind:open={isNewSpaceDialogOpen} />
+
+      <Button
+        variant="link"
+        title="Create Space"
+        class="aspect-square [&_svg]:size-8"
+        onclick={() => (isNewSpaceDialogOpen = true)}
+      >
+        <Icon icon="tabler:plus" font-size="2em" />
+      </Button>
     {/if}
 
     <div class="divider my-0"></div>
     {#if !isOpenSpaceJoined && openSpace.current}
-      <SidebarSpace space={openSpace.current} hasJoined={false} {me} />
-    {/if}
-  </div>
-  <div class="flex flex-col gap-1 items-center flex-grow overflow-y-auto">
-    {#if spaces}
-      {#each spaces as space}
-        <SidebarSpace {space} {me} />
-      {/each}
+      <div class="py-2 flex">
+        <SidebarSpace space={openSpace.current} hasJoined={false} />
+      </div>
     {/if}
   </div>
 
-  <section class="flex flex-col items-center gap-2 p-0">
-    <!-- Only expose Discord import in dev with a flag for now. -->
-    {#if env.PUBLIC_ENABLE_DISCORD_IMPORT == "true"}
-      <Button.Root
-        title="Import Discord Archive"
-        class="p-2 aspect-square rounded-lg hover:bg-base-200 cursor-pointer"
-        disabled={!user.session}
-        href="/discord-import"
-      >
-        <Icon icon="mdi:folder-upload-outline" font-size="1.8em" />
-      </Button.Root>
-    {/if}
+  <div class="relative flex-grow h-full overflow-hidden isolate">
+    <div
+      class="absolute top-0 left-0 right-0 h-5 w-full bg-gradient-to-b from-base-100 dark:from-black to-transparent z-10"
+    ></div>
+    <div
+      class="absolute bottom-0 left-0 right-0 h-5 w-full bg-gradient-to-t from-base-100 dark:from-black to-transparent z-10"
+    ></div>
 
-    <ThemeSelector />
-
-    <Login />
+    <ScrollArea
+      class="h-full overflow-y-auto overflow-x-hidden"
+    >
+      <div class="flex flex-col px-0 items-center gap-1.5 py-4">
+        {#if spaces}
+          {#each new Set(spaces.toReversed()) as space}
+            <SidebarSpace {space} />
+          {/each}
+        {/if}
+      </div>
+    </ScrollArea>
+  </div>
+  <section class="flex flex-col items-center gap-2 p-0 pb-2">
+    <SelectThemePopover />
+    <ThemeToggle class="backdrop-blur-none" />
+    <User />
   </section>
-</aside>
+</TooltipProvider>

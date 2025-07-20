@@ -2,7 +2,6 @@ import type { DidDocument } from "@atproto/oauth-client-browser";
 import { decodeBase32 } from "./utils/base32";
 import { goto } from "$app/navigation";
 import type { JSONContent } from "@tiptap/core";
-import { type ThemeName } from "./themes";
 
 /** Cleans a handle string by removing any characters not valid for a domain. */
 export function cleanHandle(handle: string): string {
@@ -11,7 +10,13 @@ export function cleanHandle(handle: string): string {
 
 export type NavigationTarget =
   | "home"
-  | { space?: string; channel?: string; thread?: string; page?: string };
+  | {
+      space?: string;
+      channel?: string;
+      thread?: string;
+      page?: string;
+      object?: string;
+    };
 
 /** A helper function to navigate to a specific roomy object, like a space, channel, or thread */
 export function navigate(target: NavigationTarget) {
@@ -26,13 +31,13 @@ export function navigateSync(target: NavigationTarget) {
   if (target == "home") {
     return "/home";
   } else if (target.space) {
-    let url = ``;
-    if (target.space.includes(".")) {
-      url += "/-";
-    } else {
-      url += `/${target.space}`;
+    let url = `/${target.space}`;
+
+    if (target.object) {
+      url += `/${target.object}`;
+      return url;
     }
-    
+
     if (target.channel) {
       url += `/${target.channel}`;
     } else if (target.thread) {
@@ -151,14 +156,6 @@ export const Toggle = ({
     },
   };
 };
-
-export function setTheme(theme: ThemeName) {
-  window.localStorage.setItem("theme", theme);
-  document.documentElement.setAttribute("data-theme", theme);
-  document
-    .querySelector('meta[name="theme-color"]')
-    ?.setAttribute("content", theme);
-}
 
 // export function unreadCount<Channel>(
 //   doc: Doc<Channel>,

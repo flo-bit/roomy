@@ -13,14 +13,15 @@
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
     for (const file of input.files) {
-      if (!file?.type.startsWith("image/")) continue;
+      if (!file?.type.startsWith("image/") && !file?.type.startsWith("video/"))
+        continue;
       processImageFile(file);
     }
   }
 </script>
 
 <button
-  class="p-1 rounded hover:bg-base-200 disabled:opacity-50"
+  class="p-2 rounded-xl cursor-pointer hover:bg-base-200 dark:hover:bg-base-400/10 disabled:opacity-50 text-base-900 dark:text-base-100"
   aria-label="Upload image"
   onclick={() => fileInput?.click()}
   tabindex="-1"
@@ -36,7 +37,7 @@
 <input
   type="file"
   multiple
-  accept="image/*"
+  accept="image/*,video/mp4"
   onchange={handleFileProcess}
   class="hidden"
   bind:this={fileInput}
